@@ -1,5 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { BUNS_PER_BURGER } from '@utils/constants';
+
 import type { RootState } from '@services/store';
 import type { TConstructorState } from '@utils-types';
 
@@ -9,12 +11,11 @@ export const selectConstructorItems = (state: RootState): TConstructorState =>
 export const selectConstructorPrice = (state: RootState): number => {
   const { bun, ingredients } = state.burgerConstructor;
   return (
-    (bun ? bun.price * 2 : 0) + ingredients.reduce((sum, item) => sum + item.price, 0)
+    (bun ? bun.price * BUNS_PER_BURGER : 0) +
+    ingredients.reduce((sum, item) => sum + item.price, 0)
   );
 };
 
-/* Счётчики пересобираются только при изменении конструктора: иначе каждый
-   рендер получал бы новый объект и перерисовывал список ингредиентов. */
 export const selectIngredientsCounters = createSelector(
   [selectConstructorItems],
   ({ bun, ingredients }): Record<string, number> => {
@@ -23,7 +24,7 @@ export const selectIngredientsCounters = createSelector(
     ingredients.forEach((ingredient) => {
       counters[ingredient._id] = (counters[ingredient._id] ?? 0) + 1;
     });
-    if (bun) counters[bun._id] = 2;
+    if (bun) counters[bun._id] = BUNS_PER_BURGER;
 
     return counters;
   }

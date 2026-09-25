@@ -5,6 +5,7 @@ import { useEffect, useState, type SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '@services/store';
+import { RESET_PASSWORD_KEY } from '@utils/constants';
 
 export const ForgotPassword = (): React.JSX.Element => {
   const [email, setEmail] = useState('');
@@ -23,7 +24,7 @@ export const ForgotPassword = (): React.JSX.Element => {
     void dispatch(requestPasswordReset({ email }))
       .unwrap()
       .then(() => {
-        localStorage.setItem('resetPassword', 'true');
+        localStorage.setItem(RESET_PASSWORD_KEY, 'true');
         void navigate('/reset-password', { replace: true });
       })
       .catch(() => {

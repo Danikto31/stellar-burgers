@@ -1,5 +1,7 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
 
+import { INGREDIENT_TYPES } from '@utils/constants';
+
 import { createOrder } from './order-slice';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
@@ -20,7 +22,7 @@ const burgerConstructorSlice = createSlice({
   reducers: {
     addIngredient: {
       reducer: (state, action: PayloadAction<TConstructorIngredient>): void => {
-        if (action.payload.type === 'bun') {
+        if (action.payload.type === INGREDIENT_TYPES.bun) {
           state.bun = action.payload;
           return;
         }

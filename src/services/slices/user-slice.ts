@@ -9,20 +9,16 @@ import {
 } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '@utils/constants';
 import { deleteCookie, getCookie, setCookie } from '@utils/cookie';
 
-import type { TLoginData, TRegisterData } from '@api';
-import type { TUser } from '@utils-types';
-
-export type TUserState = {
-  user: TUser | null;
-  /* Пока авторизация не проверена, защищённые маршруты не знают, показывать
-     содержимое или отправлять на форму входа. */
-  isAuthChecked: boolean;
-  isLoading: boolean;
-  authError: string | null;
-  updateUserError: string | null;
-};
+import type {
+  TForgotPasswordData,
+  TLoginData,
+  TRegisterData,
+  TResetPasswordData,
+} from '@api';
+import type { TUser, TUserState } from '@utils-types';
 
 const initialState: TUserState = {
   user: null,
@@ -33,13 +29,13 @@ const initialState: TUserState = {
 };
 
 const saveTokens = (accessToken: string, refreshToken: string): void => {
-  setCookie('accessToken', accessToken);
-  localStorage.setItem('refreshToken', refreshToken);
+  setCookie(ACCESS_TOKEN_KEY, accessToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 };
 
 const removeTokens = (): void => {
-  deleteCookie('accessToken');
-  localStorage.removeItem('refreshToken');
+  deleteCookie(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 export const registerUser = createAsyncThunk(
@@ -68,7 +64,7 @@ export const logoutUser = createAsyncThunk('user/logout', async (): Promise<void
 export const checkUserAuth = createAsyncThunk(
   'user/checkAuth',
   async (): Promise<TUser | null> => {
-    if (!getCookie('accessToken')) return null;
+    if (!getCookie(ACCESS_TOKEN_KEY)) return null;
 
     try {
       const { user } = await getUserApi();
@@ -83,14 +79,14 @@ export const checkUserAuth = createAsyncThunk(
 
 export const requestPasswordReset = createAsyncThunk(
   'user/requestPasswordReset',
-  async (data: { email: string }): Promise<void> => {
+  async (data: TForgotPasswordData): Promise<void> => {
     await forgotPasswordApi(data);
   }
 );
 
 export const resetPassword = createAsyncThunk(
   'user/resetPassword',
-  async (data: { password: string; token: string }): Promise<void> => {
+  async (data: TResetPasswordData): Promise<void> => {
     await resetPasswordApi(data);
   }
 );

@@ -1,15 +1,7 @@
 import { getOrderByNumberApi, orderBurgerApi } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import type { TOrder } from '@utils-types';
-
-export type TOrderState = {
-  orderRequest: boolean;
-  orderModalData: TOrder | null;
-  viewedOrder: TOrder | null;
-  isViewedOrderLoading: boolean;
-  error: string | null;
-};
+import type { TOrder, TOrderState } from '@utils-types';
 
 const initialState: TOrderState = {
   orderRequest: false,

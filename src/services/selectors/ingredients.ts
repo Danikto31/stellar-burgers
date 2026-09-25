@@ -1,4 +1,3 @@
-import type { SerializedError } from '@reduxjs/toolkit';
 import type { RootState } from '@services/store';
 import type { TIngredient } from '@utils-types';
 
@@ -8,7 +7,7 @@ export const selectIngredients = (state: RootState): TIngredient[] =>
 export const selectIngredientsLoading = (state: RootState): boolean =>
   state.ingredients.isLoading;
 
-export const selectIngredientsError = (state: RootState): SerializedError | null =>
+export const selectIngredientsError = (state: RootState): string | null =>
   state.ingredients.error;
 
 export const selectIngredientById =

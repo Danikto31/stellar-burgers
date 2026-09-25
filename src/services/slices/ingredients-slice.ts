@@ -1,14 +1,7 @@
 import { getIngredientsApi } from '@api';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import type { SerializedError } from '@reduxjs/toolkit';
-import type { TIngredient } from '@utils-types';
-
-export type TIngredientsState = {
-  items: TIngredient[];
-  isLoading: boolean;
-  error: SerializedError | null;
-};
+import type { TIngredient, TIngredientsState } from '@utils-types';
 
 /* Список ингредиентов запрашивается один раз при старте приложения, поэтому
    загрузка считается начатой ещё до первого запроса. */
@@ -39,7 +32,7 @@ const ingredientsSlice = createSlice({
       })
       .addCase(fetchIngredients.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.error;
+        state.error = action.error.message ?? 'Неизвестная ошибка';
       });
   },
 });

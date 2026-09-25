@@ -68,8 +68,7 @@ const AppContent = ({
   if (error) {
     return (
       <p className={clsx(styles.message, 'text text_type_main-medium')}>
-        Не удалось загрузить ингредиенты
-        {error.message ? `: ${error.message}` : '.'}
+        Не удалось загрузить ингредиенты: {error}
       </p>
     );
   }

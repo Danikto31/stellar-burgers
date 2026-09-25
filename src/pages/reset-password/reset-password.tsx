@@ -5,6 +5,7 @@ import { useEffect, useState, type SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useDispatch, useSelector } from '@services/store';
+import { RESET_PASSWORD_KEY } from '@utils/constants';
 
 export const ResetPassword = (): React.JSX.Element => {
   const [password, setPassword] = useState('');
@@ -18,9 +19,8 @@ export const ResetPassword = (): React.JSX.Element => {
     dispatch(resetAuthError());
   }, [dispatch]);
 
-  /* Форму открывают только после запроса письма со ссылкой на восстановление. */
   useEffect(() => {
-    if (!localStorage.getItem('resetPassword')) {
+    if (!localStorage.getItem(RESET_PASSWORD_KEY)) {
       void navigate('/forgot-password', { replace: true });
     }
   }, [navigate]);
@@ -31,7 +31,7 @@ export const ResetPassword = (): React.JSX.Element => {
     void dispatch(resetPassword({ password, token }))
       .unwrap()
       .then(() => {
-        localStorage.removeItem('resetPassword');
+        localStorage.removeItem(RESET_PASSWORD_KEY);
         void navigate('/login');
       })
       .catch(() => {
