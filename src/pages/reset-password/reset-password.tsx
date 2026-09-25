@@ -1,35 +1,47 @@
-import { resetPasswordApi } from '@api';
+import { selectAuthError } from '@selectors';
+import { resetAuthError, resetPassword } from '@slices';
 import { ResetPasswordUI } from '@ui-pages';
-import { type SyntheticEvent, useEffect, useState } from 'react';
+import { useEffect, useState, type SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useDispatch, useSelector } from '@services/store';
+import { RESET_PASSWORD_KEY } from '@utils/constants';
+
 export const ResetPassword = (): React.JSX.Element => {
-  const navigate = useNavigate();
   const [password, setPassword] = useState('');
   const [token, setToken] = useState('');
-  const [error, setError] = useState<Error | null>(null);
 
-  const handleSubmit = (e: SyntheticEvent): void => {
-    e.preventDefault();
-
-    setError(null);
-    void resetPasswordApi({ password, token })
-      .then(() => {
-        localStorage.removeItem('resetPassword');
-        void navigate('/login');
-      })
-      .catch((err: Error) => setError(err));
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const errorText = useSelector(selectAuthError);
 
   useEffect(() => {
-    if (!localStorage.getItem('resetPassword')) {
+    dispatch(resetAuthError());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!localStorage.getItem(RESET_PASSWORD_KEY)) {
       void navigate('/forgot-password', { replace: true });
     }
   }, [navigate]);
 
+  const handleSubmit = (e: SyntheticEvent): void => {
+    e.preventDefault();
+
+    void dispatch(resetPassword({ password, token }))
+      .unwrap()
+      .then(() => {
+        localStorage.removeItem(RESET_PASSWORD_KEY);
+        void navigate('/login');
+      })
+      .catch(() => {
+        /* Текст ошибки уже лежит в хранилище и выводится под формой. */
+      });
+  };
+
   return (
     <ResetPasswordUI
-      errorText={error?.message}
+      errorText={errorText}
       password={password}
       token={token}
       setPassword={setPassword}
