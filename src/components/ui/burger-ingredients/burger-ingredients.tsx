@@ -2,6 +2,8 @@ import { IngredientsCategory } from '@components';
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { memo } from 'react';
 
+import { INGREDIENT_TYPES } from '@utils/constants';
+
 import type { BurgerIngredientsUIProps } from './type';
 
 import styles from './burger-ingredients.module.css';
@@ -24,13 +26,25 @@ export const BurgerIngredientsUI = memo(function BurgerIngredientsUI({
       <section className={styles.burger_ingredients}>
         <nav>
           <ul className={styles.menu}>
-            <Tab value="bun" active={currentTab === 'bun'} onClick={onTabClick}>
+            <Tab
+              value={INGREDIENT_TYPES.bun}
+              active={currentTab === INGREDIENT_TYPES.bun}
+              onClick={onTabClick}
+            >
               Булки
             </Tab>
-            <Tab value="main" active={currentTab === 'main'} onClick={onTabClick}>
+            <Tab
+              value={INGREDIENT_TYPES.main}
+              active={currentTab === INGREDIENT_TYPES.main}
+              onClick={onTabClick}
+            >
               Начинки
             </Tab>
-            <Tab value="sauce" active={currentTab === 'sauce'} onClick={onTabClick}>
+            <Tab
+              value={INGREDIENT_TYPES.sauce}
+              active={currentTab === INGREDIENT_TYPES.sauce}
+              onClick={onTabClick}
+            >
               Соусы
             </Tab>
           </ul>

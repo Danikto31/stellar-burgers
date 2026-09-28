@@ -1,15 +1,28 @@
+import { selectFeedOrders } from '@selectors';
+import { fetchFeeds } from '@slices';
 import { Preloader } from '@ui';
 import { FeedUI } from '@ui-pages';
+import { useCallback, useEffect } from 'react';
 
-import type { TOrder } from '@utils-types';
+import { useDispatch, useSelector } from '@services/store';
+
+/** Как часто лента подтягивает заказы с сервера, мс. */
+const FEED_REFRESH_INTERVAL = 15000;
 
 export const Feed = (): React.JSX.Element => {
-  // TODO: Взять переменную из стора
-  const orders: TOrder[] = [];
+  const dispatch = useDispatch();
+  const orders = useSelector(selectFeedOrders);
 
-  const handleGetFeeds = (): void => {
-    // TODO: Запросить ленту заказов
-  };
+  const handleGetFeeds = useCallback((): void => {
+    void dispatch(fetchFeeds());
+  }, [dispatch]);
+
+  useEffect(() => {
+    handleGetFeeds();
+    const timerId = setInterval(handleGetFeeds, FEED_REFRESH_INTERVAL);
+
+    return (): void => clearInterval(timerId);
+  }, [handleGetFeeds]);
 
   if (!orders.length) {
     return <Preloader />;
