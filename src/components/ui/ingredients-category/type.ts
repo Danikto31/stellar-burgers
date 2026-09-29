@@ -6,5 +6,4 @@ export type TIngredientsCategoryUIProps = {
   ingredients: TIngredient[];
   ingredientsCounters: Record<string, number>;
   ref?: React.Ref<HTMLUListElement>;
-  'data-testid'?: string;
 };

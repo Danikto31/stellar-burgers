@@ -20,7 +20,7 @@ export const BurgerIngredientUI = memo(function BurgerIngredientUI({
   const { image, price, name, _id } = ingredient;
 
   return (
-    <li className={styles.container} data-testid={`ingredient-${_id}`}>
+    <li className={styles.container}>
       <Link className={styles.article} to={`/ingredients/${_id}`} state={locationState}>
         {count && <Counter count={count} />}
         <img src={image} alt="картинка ингредиента." />
