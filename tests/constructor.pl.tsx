@@ -4,15 +4,16 @@ import { expect, test } from '@playwright/test';
 
 import type { Page } from '@playwright/test';
 
-/* Все запросы к бэкенду идут на /api: те, что есть в HAR-файлах, получают
-   моковый ответ, остальные обрываются, чтобы тесты не ходили на реальный сервер. */
+/* Все запросы приложения к бэкенду идут на адреса с /api. */
 const API_URL_PATTERN = '**/api/**';
 
-const INGREDIENTS_HAR = 'ingredients.har';
-const USER_HAR = 'user.har';
-const ORDER_HAR = 'order.har';
+/* Ответы на все запросы к бэкенду, которые выполняются в тестах: список
+   ингредиентов, данные пользователя и создание заказа. */
+const API_HAR_PATH = fileURLToPath(
+  new URL('./hars/stellar-burgers-api.har', import.meta.url)
+);
 
-/* Данные ниже совпадают с моковыми ответами из tests/hars. */
+/* Данные ниже совпадают с моковыми ответами из HAR-файла. */
 const craterBun = {
   id: '643d69a5c3f7b9001cfa093c',
   name: 'Краторная булка N-200i',
@@ -42,18 +43,13 @@ const orderNumber = '98765';
 const accessToken = 'Bearer test-access-token';
 const refreshToken = 'test-refresh-token';
 
-const getHarPath = (fileName: string): string =>
-  fileURLToPath(new URL(`./hars/${fileName}`, import.meta.url));
-
-const mockBackend = async (page: Page, harFileNames: string[]): Promise<void> => {
-  await page.route(API_URL_PATTERN, (route) => route.abort());
-
-  for (const harFileName of harFileNames) {
-    await page.routeFromHAR(getHarPath(harFileName), {
-      url: API_URL_PATTERN,
-      notFound: 'fallback',
-    });
-  }
+/* Ответы сервера берутся только из HAR-файла: запрос к бэкенду, которого в нём
+   нет, обрывается и до настоящего сервера не доходит. */
+const mockBackend = async (page: Page): Promise<void> => {
+  await page.routeFromHAR(API_HAR_PATH, {
+    url: API_URL_PATTERN,
+    notFound: 'abort',
+  });
 };
 
 const openConstructorPage = async (page: Page): Promise<void> => {
@@ -75,7 +71,7 @@ const openIngredientModal = async (page: Page, ingredientId: string): Promise<vo
 
 test.describe('Добавление ингредиентов в конструктор бургера', () => {
   test.beforeEach(async ({ page }) => {
-    await mockBackend(page, [INGREDIENTS_HAR]);
+    await mockBackend(page);
     await openConstructorPage(page);
   });
 
@@ -117,7 +113,7 @@ test.describe('Добавление ингредиентов в конструк
 
 test.describe('Модальное окно с описанием ингредиента', () => {
   test.beforeEach(async ({ page }) => {
-    await mockBackend(page, [INGREDIENTS_HAR]);
+    await mockBackend(page);
     await openConstructorPage(page);
   });
 
@@ -179,7 +175,7 @@ test.describe('Оформление заказа', () => {
       localStorage.setItem('refreshToken', token);
     }, refreshToken);
 
-    await mockBackend(page, [INGREDIENTS_HAR, USER_HAR, ORDER_HAR]);
+    await mockBackend(page);
     await openConstructorPage(page);
   });
 
